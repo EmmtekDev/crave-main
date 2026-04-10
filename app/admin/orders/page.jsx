@@ -205,8 +205,6 @@ export default function AdminOrdersPage() {
                         orderAddress={order.address}
                         orderStatus={order.status || 'pending'}
                         editable={true}
-                        height="h-48"
-                        width="w-full max-w-md"
                       />
                     ) : (
                       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">
