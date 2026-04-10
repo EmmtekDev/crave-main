@@ -1,0 +1,17 @@
+import hero_model_img from "./hero_model_img.png"
+import hero_product_img1 from "./hero_product_img1.png"
+import hero_product_img2 from "./hero_product_img2.png"
+import { ClockFadingIcon, HeadsetIcon } from "lucide-react"
+
+export const assets = {
+    hero_model_img,
+    hero_product_img1,
+    hero_product_img2,
+}
+
+export const categories = ["Power Banks", "Chargers", "Cables"]
+
+export const ourSpecsData = [
+    { title: "7 Days easy Return", description: "Change your mind? No worries. Return any item within 7 days.", icon: ClockFadingIcon, accent: '#FFAD51' },
+    { title: "24/7 Customer Support", description: "We're here for you. Get expert help with our customer support.", icon: HeadsetIcon, accent: '#A684FF' }
+]
