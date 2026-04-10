@@ -5,6 +5,9 @@ import { toast } from "react-hot-toast"
 import db from '@/lib/instantdb'
 import { id } from '@instantdb/react'
 
+// Import Leaflet CSS
+import 'leaflet/dist/leaflet.css'
+
 const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
     const { user } = db.useAuth()
     const mapRef = useRef(null)
@@ -35,56 +38,77 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
     useEffect(() => {
         if (!isClient || !showMap || typeof window === 'undefined' || !mapRef.current) return
 
-        // Dynamically import Leaflet
-        import('leaflet').then((L) => {
-            // Fix for default markers
-            delete L.Icon.Default.prototype._getIconUrl
-            L.Icon.Default.mergeOptions({
-                iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-                iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-            })
-
-            // Create map centered on Lagos, Nigeria
-            const map = L.map(mapRef.current).setView([6.5244, 3.3342], 10)
-
-            // Add tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19,
-            }).addTo(map)
-
-            // Add click handler to place marker
-            map.on('click', (e) => {
-                const { lat, lng } = e.latlng
-                setCoordinates({ lat, lng })
-
-                // Remove existing marker
-                if (markerRef.current) {
-                    map.removeLayer(markerRef.current)
-                }
-
-                // Add new marker
-                const marker = L.marker([lat, lng], { draggable: true }).addTo(map)
-                markerRef.current = marker
-
-                // Handle marker drag
-                marker.on('dragend', (event) => {
-                    const newPos = event.target.getLatLng()
-                    setCoordinates({ lat: newPos.lat, lng: newPos.lng })
+        // Small delay to ensure container is rendered
+        const timer = setTimeout(() => {
+            // Dynamically import Leaflet
+            import('leaflet').then((L) => {
+                // Fix for default markers
+                delete L.Icon.Default.prototype._getIconUrl
+                L.Icon.Default.mergeOptions({
+                    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+                    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
                 })
-            })
 
-            mapInstanceRef.current = map
+                // Create map centered on Lagos, Nigeria
+                const map = L.map(mapRef.current, {
+                    center: [6.5244, 3.3342],
+                    zoom: 10,
+                    zoomControl: true,
+                })
 
-            // Cleanup
-            return () => {
-                if (mapInstanceRef.current) {
-                    mapInstanceRef.current.remove()
-                    mapInstanceRef.current = null
+                // Add tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
+                    maxZoom: 19,
+                }).addTo(map)
+
+                // Force map to recalculate size after container is ready
+                setTimeout(() => {
+                    map.invalidateSize()
+                }, 100)
+
+                // Handle window resize
+                const handleResize = () => {
+                    map.invalidateSize()
                 }
-            }
-        })
+                window.addEventListener('resize', handleResize)
+
+                // Add click handler to place marker
+                map.on('click', (e) => {
+                    const { lat, lng } = e.latlng
+                    setCoordinates({ lat, lng })
+
+                    // Remove existing marker
+                    if (markerRef.current) {
+                        map.removeLayer(markerRef.current)
+                    }
+
+                    // Add new marker
+                    const marker = L.marker([lat, lng], { draggable: true }).addTo(map)
+                    markerRef.current = marker
+
+                    // Handle marker drag
+                    marker.on('dragend', (event) => {
+                        const newPos = event.target.getLatLng()
+                        setCoordinates({ lat: newPos.lat, lng: newPos.lng })
+                    })
+                })
+
+                mapInstanceRef.current = map
+
+                // Cleanup
+                return () => {
+                    window.removeEventListener('resize', handleResize)
+                    if (mapInstanceRef.current) {
+                        mapInstanceRef.current.remove()
+                        mapInstanceRef.current = null
+                    }
+                }
+            })
+        }, 200) // Small delay
+
+        return () => clearTimeout(timer)
     }, [isClient, showMap])
 
     const handleAddressChange = (e) => {
@@ -175,8 +199,8 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
                             Step 2: Click on the map to set your exact location
                         </div>
 
-                        <div className="h-64 border border-slate-200 rounded overflow-hidden">
-                            <div ref={mapRef} className="w-full h-full" />
+                        <div className="h-64 border border-slate-200 rounded overflow-hidden relative">
+                            <div ref={mapRef} className="w-full h-full absolute inset-0" style={{ minHeight: '256px' }} />
                         </div>
 
                         {coordinates.lat && coordinates.lng && (
