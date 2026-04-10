@@ -153,11 +153,6 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
                     map.invalidateSize()
                 }
                 window.addEventListener('resize', handleResize)
-
-                // Handle window resize
-                const handleResize = () => {
-                    map.invalidateSize()
-                }
                 window.addEventListener('resize', handleResize)
 
                 // Add click handler to place marker (fallback for manual selection)
