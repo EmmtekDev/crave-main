@@ -24,7 +24,8 @@ export default function AdminDashboard() {
           setUsername(parsed.username)
           setIsAdmin(true)
         } catch (err) {
-        setIsAdmin(false)
+          setIsAdmin(false)
+        }
       }
     }
     setLoading(false)
