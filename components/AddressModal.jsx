@@ -53,7 +53,7 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
                 // Create map centered on Lagos, Nigeria
                 const map = L.map(mapRef.current, {
                     center: [6.5244, 3.3342],
-                    zoom: 10,
+                    zoom: 13, // Increased from 10 for more detail
                     zoomControl: true,
                 })
 

@@ -65,6 +65,31 @@ export default function AdminOrdersPage() {
     }
   }
 
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      setUpdatingOrderId(orderId)
+      await db.transact(db.tx.orders[orderId].update({ status: newStatus })).catch(err => {
+        if (err.message?.includes('closing')) {
+          throw new Error('Connection lost. Please refresh and try again.')
+        }
+        throw err
+      })
+      toast.promise(
+        Promise.resolve(),
+        {
+          success: 'Order status updated',
+          loading: 'Updating order status...',
+          error: 'Failed to update order status'
+        }
+      )
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to update order status')
+    } finally {
+      setUpdatingOrderId(null)
+    }
+  }
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>
   }
@@ -180,6 +205,8 @@ export default function AdminOrdersPage() {
                         orderAddress={order.address}
                         orderStatus={order.status || 'pending'}
                         editable={true}
+                        height="h-48"
+                        width="w-full max-w-md"
                       />
                     ) : (
                       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">

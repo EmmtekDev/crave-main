@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SORTING_HUB, calculateMidpoint } from '@/lib/dbUtils'
 
-const MapTracking = ({ orderAddress, orderStatus = 'pending', editable = false, onStatusChange = null }) => {
+const MapTracking = ({ orderAddress, orderStatus = 'pending', editable = false, onStatusChange = null, height = 'h-64', width = 'w-full' }) => {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const [isClient, setIsClient] = useState(false)
@@ -179,7 +179,7 @@ const MapTracking = ({ orderAddress, orderStatus = 'pending', editable = false, 
   }, [orderAddress, orderStatus, isClient])
 
   return (
-    <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+    <div className={`${width} ${height} rounded-lg overflow-hidden border border-gray-200 shadow-sm`}>
       {isClient ? (
         <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
       ) : (
