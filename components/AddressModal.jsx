@@ -27,7 +27,87 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
     const [coordinates, setCoordinates] = useState({ lat: null, lng: null })
     const [showMap, setShowMap] = useState(false)
     const [isClient, setIsClient] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [searchResults, setSearchResults] = useState([])
+    const [isSearching, setIsSearching] = useState(false)
     const [submitting, setSubmitting] = useState(false)
+
+    // Search for addresses using Nominatim API
+    const searchAddress = async (query) => {
+        if (!query.trim()) {
+            setSearchResults([])
+            return
+        }
+
+        setIsSearching(true)
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=ng&viewbox=2.5,6.7,4.2,6.2&bounded=1`,
+                {
+                    headers: {
+                        'User-Agent': 'Crave-App'
+                    }
+                }
+            )
+
+            if (!response.ok) {
+                throw new Error('Search failed')
+            }
+
+            const results = await response.json()
+            setSearchResults(results)
+        } catch (error) {
+            console.error('Address search error:', error)
+            setSearchResults([])
+        } finally {
+            setIsSearching(false)
+        }
+    }
+
+    // Handle search input with debounce
+    const handleSearchChange = (e) => {
+        const query = e.target.value
+        setSearchQuery(query)
+
+        // Debounce search
+        const timeoutId = setTimeout(() => {
+            searchAddress(query)
+        }, 300)
+
+        return () => clearTimeout(timeoutId)
+    }
+
+    // Select a search result
+    const selectSearchResult = (result) => {
+        const lat = parseFloat(result.lat)
+        const lng = parseFloat(result.lon)
+        setCoordinates({ lat, lng })
+        setSearchQuery(result.display_name.split(',')[0]) // Show just the main part
+        setSearchResults([])
+
+        // Update map marker if map is initialized
+        if (mapInstanceRef.current && markerRef.current) {
+            const map = mapInstanceRef.current
+            map.setView([lat, lng], 16)
+
+            // Remove existing marker
+            if (markerRef.current) {
+                map.removeLayer(markerRef.current)
+            }
+
+            // Add new marker
+            import('leaflet').then((L) => {
+                const marker = L.marker([lat, lng], { draggable: true }).addTo(map)
+                markerRef.current = marker
+
+                // Handle marker drag
+                marker.on('dragend', (event) => {
+                    const newPos = event.target.getLatLng()
+                    setCoordinates({ lat: newPos.lat, lng: newPos.lng })
+                })
+            })
+        }
+    }
 
     // Only render map on client side
     useEffect(() => {
@@ -74,10 +154,18 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
                 }
                 window.addEventListener('resize', handleResize)
 
-                // Add click handler to place marker
+                // Handle window resize
+                const handleResize = () => {
+                    map.invalidateSize()
+                }
+                window.addEventListener('resize', handleResize)
+
+                // Add click handler to place marker (fallback for manual selection)
                 map.on('click', (e) => {
                     const { lat, lng } = e.latlng
                     setCoordinates({ lat, lng })
+                    setSearchQuery('') // Clear search when manually selecting
+                    setSearchResults([])
 
                     // Remove existing marker
                     if (markerRef.current) {
@@ -196,8 +284,40 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
                     // Map Selection
                     <div className="space-y-4">
                         <div className="text-sm text-slate-600">
-                            Step 2: Click on the map to set your exact location
+                            Step 2: Search for your address or click on the map
                         </div>
+
+                        {/* Search Box */}
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                placeholder="Search for your address (e.g., 'Lagos, Nigeria')"
+                                className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            {isSearching && (
+                                <div className="absolute right-3 top-3">
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Search Results */}
+                        {searchResults.length > 0 && (
+                            <div className="bg-white border border-slate-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                                {searchResults.map((result, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => selectSearchResult(result)}
+                                        className="w-full text-left p-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 focus:outline-none focus:bg-slate-50"
+                                    >
+                                        <div className="font-medium text-slate-800">{result.display_name.split(',')[0]}</div>
+                                        <div className="text-sm text-slate-500 truncate">{result.display_name}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
                         <div className="h-64 border border-slate-200 rounded overflow-hidden relative">
                             <div ref={mapRef} className="w-full h-full absolute inset-0" style={{ minHeight: '256px' }} />
@@ -211,6 +331,10 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
                                 </div>
                             </div>
                         )}
+
+                        <div className="text-xs text-slate-500">
+                            💡 Tip: Search for your address first, or click directly on the map to set your location
+                        </div>
 
                         <div className="flex gap-3">
                             <button
