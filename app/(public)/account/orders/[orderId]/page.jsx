@@ -38,8 +38,9 @@ export default function OrderDetail() {
             editable={false}
           />
         ) : (
-          <div className="p-4 bg-gray-100 rounded text-gray-600 text-sm">
-            Location data not available for this order
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">
+            <p className="font-medium">Location data not available for this order</p>
+            <p className="mt-1">We're working on setting up the delivery tracking. Please check back later or contact support if this persists.</p>
           </div>
         )}
       </div>

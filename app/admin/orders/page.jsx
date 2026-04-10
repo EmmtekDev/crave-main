@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import MapTracking from '@/components/MapTracking'
+import { geocodeExistingOrder } from '@/lib/dbUtils'
 
 export default function AdminOrdersPage() {
   const router = useRouter()
@@ -46,26 +47,19 @@ export default function AdminOrdersPage() {
     }
   }
 
-  const handleStatusChange = async (orderId, newStatus) => {
+  const handleGeocodeOrder = async (orderId) => {
     try {
       setUpdatingOrderId(orderId)
-      await db.transact(db.tx.orders[orderId].update({ status: newStatus })).catch(err => {
-        if (err.message?.includes('closing')) {
-          throw new Error('Connection lost. Please refresh and try again.')
-        }
-        throw err
-      })
-      toast.promise(
-        Promise.resolve(),
-        {
-          success: 'Order status updated',
-          loading: 'Updating order status...',
-          error: 'Failed to update order status'
-        }
-      )
+      const result = await geocodeExistingOrder(orderId)
+
+      if (result.success) {
+        toast.success('Order geocoded successfully')
+      } else {
+        toast.error(`Geocoding failed: ${result.error}`)
+      }
     } catch (err) {
       console.error(err)
-      toast.error('Failed to update order status')
+      toast.error('Failed to geocode order')
     } finally {
       setUpdatingOrderId(null)
     }
@@ -132,6 +126,15 @@ export default function AdminOrdersPage() {
                       <option value="shipped">Shipped</option>
                       <option value="delivered">Delivered</option>
                     </select>
+                    {(!order.address?.lat || !order.address?.lng) && (
+                      <button
+                        onClick={() => handleGeocodeOrder(order.id)}
+                        disabled={updatingOrderId === order.id}
+                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 disabled:opacity-50"
+                      >
+                        {updatingOrderId === order.id ? 'Geocoding...' : 'Geocode'}
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -169,14 +172,21 @@ export default function AdminOrdersPage() {
                 )}
 
                 {/* Tracking Map */}
-                {order.address && order.address.lat && order.address.lng && (
+                {order.address && (
                   <div className="mb-4 pb-4 border-b border-slate-200">
                     <p className="text-sm text-slate-500 mb-2">Order Tracking Map</p>
-                    <MapTracking 
-                      orderAddress={order.address} 
-                      orderStatus={order.status || 'pending'}
-                      editable={true}
-                    />
+                    {order.address.lat && order.address.lng ? (
+                      <MapTracking
+                        orderAddress={order.address}
+                        orderStatus={order.status || 'pending'}
+                        editable={true}
+                      />
+                    ) : (
+                      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">
+                        <p className="font-medium">Location data not available</p>
+                        <p className="mt-1">Click the "Geocode" button above to fetch coordinates for this address.</p>
+                      </div>
+                    )}
                   </div>
                 )}
 
