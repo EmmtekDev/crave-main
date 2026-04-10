@@ -4,6 +4,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import db from '@/lib/instantdb'
 import { id } from '@instantdb/react'
+import { geocodeAddress } from '@/lib/dbUtils'
 
 const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
     const { user } = db.useAuth()
@@ -34,10 +35,15 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
             if (!user) {
                 throw new Error('User not logged in')
             }
-            
+
+            // Geocode the address to get coordinates
+            const coordinates = await geocodeAddress(address)
+
             const addressId = id()
             await db.transact(db.tx.addresses[addressId].update({
                 ...address,
+                lat: coordinates?.lat || null,
+                lng: coordinates?.lng || null,
                 userId: user.id,
                 createdAt: new Date().toISOString(),
             })).catch(err => {
@@ -46,8 +52,8 @@ const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
                 }
                 throw err
             })
-            
-            toast.success('Address saved')
+
+            toast.success(coordinates ? 'Address saved with location' : 'Address saved (location lookup failed)')
             setShowAddressModal(false)
             if (onAddressAdded) {
                 onAddressAdded()
