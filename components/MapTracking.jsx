@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { SORTING_HUB, calculateMidpoint } from '@/lib/dbUtils'
@@ -8,8 +8,16 @@ import { SORTING_HUB, calculateMidpoint } from '@/lib/dbUtils'
 const MapTracking = ({ orderAddress, orderStatus = 'pending', editable = false, onStatusChange = null }) => {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
+  const [isClient, setIsClient] = useState(false)
+
+  // Only render on client side
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
+    if (!isClient) return
+
     // Fix for default markers in Next.js
     delete L.Icon.Default.prototype._getIconUrl
     L.Icon.Default.mergeOptions({
@@ -39,7 +47,7 @@ const MapTracking = ({ orderAddress, orderStatus = 'pending', editable = false, 
         mapInstanceRef.current = null
       }
     }
-  }, [])
+  }, [isClient])
 
   useEffect(() => {
     if (!mapInstanceRef.current || !orderAddress) return
@@ -168,7 +176,13 @@ const MapTracking = ({ orderAddress, orderStatus = 'pending', editable = false, 
 
   return (
     <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-      <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+      {isClient ? (
+        <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+      ) : (
+        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+          <div className="text-gray-500">Loading map...</div>
+        </div>
+      )}
     </div>
   )
 }
