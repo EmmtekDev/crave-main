@@ -56,16 +56,10 @@ const OrderSummary = ({ totalPrice, items }) => {
             const couponDiscountRaw = coupon ? Math.round(((coupon?.discount || 0) / 100) * totalPrice) : 0;
             const orderTotal = totalPrice + dispatchFeeRaw - couponDiscountRaw;
 
-            // Use coordinates from address if available, otherwise geocode
-            let coordinates = null
-            if (selectedAddress.lat && selectedAddress.lng) {
-                coordinates = {
-                    lat: selectedAddress.lat,
-                    lng: selectedAddress.lng
-                }
-            } else {
-                // Fallback: geocode the address if coordinates not available
-                coordinates = await geocodeAddress(selectedAddress)
+            // Use coordinates from the selected address (already set during address creation)
+            const coordinates = {
+                lat: selectedAddress.lat,
+                lng: selectedAddress.lng
             }
 
             const orderData = {
