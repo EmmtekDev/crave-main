@@ -119,55 +119,91 @@ export default function DeliveryPage() {
 
   // Geocode sender address
   const handleGeocodeSender = async () => {
-    if (!senderAddress || !senderCity || !senderState) {
-      toast.error('Please fill in sender address details')
+    if (!senderCity || !senderState) {
+      toast.error('Please fill in at least city and state')
       return
     }
 
     try {
-      const coords = await geocodeAddress({
+      // Try with full address first
+      let coords = await geocodeAddress({
         street: senderAddress,
         city: senderCity,
         state: senderState,
         country: 'Nigeria',
       })
 
+      // If that fails, try with just city and state
+      if (!coords) {
+        coords = await geocodeAddress({
+          city: senderCity,
+          state: senderState,
+          country: 'Nigeria',
+        })
+      }
+
+      // If still no results, try with just state
+      if (!coords) {
+        coords = await geocodeAddress({
+          state: senderState,
+          country: 'Nigeria',
+        })
+      }
+
       if (coords) {
         setSenderCoords(coords)
         toast.success('Sender location confirmed')
       } else {
-        toast.error('Could not find sender location. Please check the address.')
+        toast.error('Address not found. Try using just the city/state name.')
       }
     } catch (err) {
       console.error(err)
-      toast.error('Error geocoding sender address')
+      toast.error('Error finding location. Please try a different address format.')
     }
   }
 
   // Geocode recipient address
   const handleGeocodeRecipient = async () => {
-    if (!recipientAddress || !recipientCity || !recipientState) {
-      toast.error('Please fill in recipient address details')
+    if (!recipientCity || !recipientState) {
+      toast.error('Please fill in at least city and state')
       return
     }
 
     try {
-      const coords = await geocodeAddress({
+      // Try with full address first
+      let coords = await geocodeAddress({
         street: recipientAddress,
         city: recipientCity,
         state: recipientState,
         country: 'Nigeria',
       })
 
+      // If that fails, try with just city and state
+      if (!coords) {
+        coords = await geocodeAddress({
+          city: recipientCity,
+          state: recipientState,
+          country: 'Nigeria',
+        })
+      }
+
+      // If still no results, try with just state
+      if (!coords) {
+        coords = await geocodeAddress({
+          state: recipientState,
+          country: 'Nigeria',
+        })
+      }
+
       if (coords) {
         setRecipientCoords(coords)
         toast.success('Recipient location confirmed')
       } else {
-        toast.error('Could not find recipient location. Please check the address.')
+        toast.error('Address not found. Try using just the city/state name.')
       }
     } catch (err) {
       console.error(err)
-      toast.error('Error geocoding recipient address')
+      toast.error('Error finding location. Please try a different address format.')
     }
   }
 
@@ -426,6 +462,9 @@ export default function DeliveryPage() {
                   >
                     {senderCoords ? '✓ Location Confirmed' : 'Confirm Location'}
                   </button>
+                  <p className="text-xs text-slate-500 text-center">
+                    💡 Tip: Use city and state names (e.g., "Lagos, Lagos" or "Lekki, Lagos")
+                  </p>
                 </div>
               </div>
 
@@ -498,6 +537,9 @@ export default function DeliveryPage() {
                   >
                     {recipientCoords ? '✓ Location Confirmed' : 'Confirm Location'}
                   </button>
+                  <p className="text-xs text-slate-500 text-center">
+                    💡 Tip: Use city and state names (e.g., "Lagos, Lagos" or "Lekki, Lagos")
+                  </p>
                 </div>
               </div>
 
