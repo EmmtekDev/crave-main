@@ -143,6 +143,21 @@ export default function AdminDashboard() {
             </div>
           </Link>
 
+          <Link
+            href="/admin/logistics"
+            className="p-6 bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition cursor-pointer"
+          >
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Truck className="text-blue-600" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Logistics</h3>
+                <p className="text-sm text-slate-500">Manage parcel deliveries</p>
+              </div>
+            </div>
+          </Link>
+
           <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-200">
             <h3 className="text-sm text-slate-600 mb-2">Total Orders</h3>
             <p className="text-3xl font-bold text-slate-800">{loadingOrders ? '...' : orders.length}</p>
