@@ -44,6 +44,9 @@ export default function DeliveryPage() {
   const [specialInstructions, setSpecialInstructions] = useState('')
   const [insurance, setInsurance] = useState(false)
 
+  // Payment info
+  const [paymentMethod, setPaymentMethod] = useState('COD') // COD or online
+
   // Pricing info
   const [pricing, setPricing] = useState({
     baseFee: 0,
@@ -278,6 +281,7 @@ export default function DeliveryPage() {
         pickupDate,
         specialInstructions,
         insurance,
+        paymentMethod,
 
         // Pricing (stored in kobo)
         baseFee: pricing.baseFee,
@@ -693,6 +697,56 @@ export default function DeliveryPage() {
                     <p className="text-slate-800 text-sm">{packageDescription}</p>
                   </div>
                 )}
+              </div>
+
+              {/* Payment Method Selection */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-slate-800">Payment Method</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Cash on Delivery */}
+                  <div
+                    onClick={() => setPaymentMethod('COD')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition ${
+                      paymentMethod === 'COD'
+                        ? 'border-orange-600 bg-orange-50'
+                        : 'border-slate-200 hover:border-orange-300'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 mt-1 ${
+                        paymentMethod === 'COD'
+                          ? 'border-orange-600 bg-orange-600'
+                          : 'border-slate-300'
+                      }`} />
+                      <div>
+                        <p className="font-semibold text-slate-800">Cash On Delivery</p>
+                        <p className="text-sm text-slate-600">Pay when you receive your package</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pay Online */}
+                  <div
+                    onClick={() => setPaymentMethod('online')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition ${
+                      paymentMethod === 'online'
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-slate-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 mt-1 ${
+                        paymentMethod === 'online'
+                          ? 'border-blue-600 bg-blue-600'
+                          : 'border-slate-300'
+                      }`} />
+                      <div>
+                        <p className="font-semibold text-slate-800">Pay Online</p>
+                        <p className="text-sm text-slate-600">Pay now with card or bank transfer</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Pricing Summary */}

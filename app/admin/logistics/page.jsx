@@ -304,6 +304,23 @@ export default function AdminLogisticsPage() {
                     <p className="text-sm text-slate-700">{delivery.packageDescription}</p>
                   </div>
                 )}
+
+                {/* Payment Method */}
+                <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-600 uppercase font-semibold mb-1">Payment Method</p>
+                    <p className="text-sm font-medium">
+                      {delivery.paymentMethod === 'COD' ? '💵 Cash On Delivery' : '💳 Pay Online'}
+                    </p>
+                  </div>
+                  <span className={`px-3 py-1 rounded text-xs font-medium ${
+                    delivery.paymentMethod === 'COD'
+                      ? 'bg-orange-100 text-orange-700'
+                      : 'bg-blue-100 text-blue-700'
+                  }`}>
+                    {delivery.paymentMethod === 'COD' ? 'COD' : 'Online'}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

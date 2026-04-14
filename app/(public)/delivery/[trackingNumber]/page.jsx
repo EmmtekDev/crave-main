@@ -283,6 +283,28 @@ export default function DeliveryTrackingPage() {
               </div>
             </div>
 
+            {/* Payment Method */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="font-bold text-slate-800 mb-3 flex items-center">
+                <span className="text-xl mr-2">💳</span>
+                Payment Method
+              </h3>
+              <div className={`p-4 rounded-lg ${
+                delivery.paymentMethod === 'COD'
+                  ? 'bg-orange-50 border border-orange-200'
+                  : 'bg-blue-50 border border-blue-200'
+              }`}>
+                <p className="font-semibold text-slate-800 mb-1">
+                  {delivery.paymentMethod === 'COD' ? '💵 Cash On Delivery' : '💳 Pay Online'}
+                </p>
+                <p className="text-sm text-slate-600">
+                  {delivery.paymentMethod === 'COD'
+                    ? 'Payment will be collected from you on delivery'
+                    : 'Payment has been processed online'}
+                </p>
+              </div>
+            </div>
+
             {/* Support Card */}
             <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
               <h3 className="font-bold text-blue-900 mb-3">Need Help?</h3>
