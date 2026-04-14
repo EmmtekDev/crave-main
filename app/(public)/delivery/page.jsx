@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { id } from '@instantdb/react'
 import db from '@/lib/instantdb'
 import toast from 'react-hot-toast'
-import { Truck, Bike, Van, MapPin, Package, DollarSign, Clock, CheckCircle } from 'lucide-react'
+import { Truck, Bike, ShoppingCart, MapPin, Package, DollarSign, Clock, CheckCircle } from 'lucide-react'
 import { geocodeAddress } from '@/lib/dbUtils'
 
 export default function DeliveryPage() {
@@ -67,7 +67,7 @@ export default function DeliveryPage() {
     },
     car: {
       name: 'Car/Van',
-      icon: Van,
+      icon: ShoppingCart,
       maxWeight: 150,
       description: 'Ideal for standard residential and small business deliveries',
       baseFee: 2500,
