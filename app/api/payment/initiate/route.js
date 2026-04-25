@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import Flutterwave from 'flutterwave-node-v3'
 
 export async function POST(request) {
   try {
-    const flw = new Flutterwave(
-      process.env.FLUTTERWAVE_PUBLIC_KEY,
-      process.env.FLUTTERWAVE_SECRET_KEY
-    )
+    if (!process.env.FLUTTERWAVE_SECRET_KEY || !process.env.NEXT_PUBLIC_APP_URL) {
+      return NextResponse.json(
+        { error: 'Payment gateway configuration is missing' },
+        { status: 500 }
+      )
+    }
 
     const { amount, currency, email, name, type, reference } = await request.json()
 
@@ -36,23 +37,33 @@ export async function POST(request) {
       },
     }
 
-    // Initiate payment
-    const response = await flw.Charge.card(payload)
+    // Initiate payment via Flutterwave REST API
+    const response = await fetch('https://api.flutterwave.com/v3/payments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
+      },
+      body: JSON.stringify(payload),
+    })
 
-    if (response.status === 'success') {
-      return NextResponse.json({
-        status: 'success',
-        data: {
-          link: response.data.link,
-          reference: response.data.tx_ref,
-        },
-      })
-    } else {
+    const data = await response.json()
+
+    if (!response.ok || data.status !== 'success') {
+      console.error('Flutterwave payment initiation failed:', data)
       return NextResponse.json(
-        { error: 'Payment initiation failed', details: response },
+        { error: data.message || 'Payment initiation failed', details: data },
         { status: 400 }
       )
     }
+
+    return NextResponse.json({
+      status: 'success',
+      data: {
+        link: data.data.authorization_url,
+        reference: data.data.tx_ref,
+      },
+    })
   } catch (error) {
     console.error('Payment initiation error:', error)
     return NextResponse.json(
