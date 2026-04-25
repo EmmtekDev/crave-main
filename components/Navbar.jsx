@@ -106,7 +106,7 @@ const Navbar = () => {
                     <div className="sm:hidden bg-white border-t border-slate-200 px-6 py-4 flex flex-col gap-3 text-slate-600">
                         <Link href="/" onClick={() => setMobileMenuOpen(false)} className="py-2">Home</Link>
                         <Link href="/shop" onClick={() => setMobileMenuOpen(false)} className="py-2">Shop</Link>
-                        <Link href="/delivery" onClick={() => setMobileMenuOpen(false)} className="py-2">Delivery</Link>
+                        <Link href="/delivery" onClick={() => setMobileMenuOpen(false)} className="py-2">Dispatch</Link>
                         <Link href="/" onClick={() => setMobileMenuOpen(false)} className="py-2">About</Link>
                         <Link href="/" onClick={() => setMobileMenuOpen(false)} className="py-2">Contact</Link>
                         {user && <Link href="/account/orders" onClick={() => setMobileMenuOpen(false)} className="py-2">Orders</Link>}
