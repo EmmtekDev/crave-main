@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import Flutterwave from 'flutterwave-node-v3'
 
-const flw = new Flutterwave(
-  process.env.FLUTTERWAVE_PUBLIC_KEY,
-  process.env.FLUTTERWAVE_SECRET_KEY
-)
-
 export async function POST(request) {
   try {
+    const flw = new Flutterwave(
+      process.env.FLUTTERWAVE_PUBLIC_KEY,
+      process.env.FLUTTERWAVE_SECRET_KEY
+    )
+
     const { transactionId, txRef } = await request.json()
 
     if (!transactionId && !txRef) {

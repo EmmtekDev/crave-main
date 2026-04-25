@@ -5,9 +5,6 @@ import { toast } from "react-hot-toast"
 import db from '@/lib/instantdb'
 import { id } from '@instantdb/react'
 
-// Import Leaflet CSS
-import 'leaflet/dist/leaflet.css'
-
 const AddressModal = ({ setShowAddressModal, onAddressAdded }) => {
     const { user } = db.useAuth()
     const mapRef = useRef(null)

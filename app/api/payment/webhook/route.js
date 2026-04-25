@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server'
 import Flutterwave from 'flutterwave-node-v3'
 import db from '@/lib/instantdb'
 
-const flw = new Flutterwave(
-  process.env.FLUTTERWAVE_PUBLIC_KEY,
-  process.env.FLUTTERWAVE_SECRET_KEY
-)
-
 export async function POST(request) {
   try {
+    const flw = new Flutterwave(
+      process.env.FLUTTERWAVE_PUBLIC_KEY,
+      process.env.FLUTTERWAVE_SECRET_KEY
+    )
+
     const payload = await request.text()
     const signature = request.headers.get('verif-hash')
 
