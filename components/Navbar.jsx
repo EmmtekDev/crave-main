@@ -52,10 +52,10 @@ const Navbar = () => {
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600">
+                    <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600 text-sm">
                         <Link href="/">Home</Link>
                         <Link href="/shop">Shop</Link>
-                        <Link href="/delivery">Delivery</Link>
+                        <Link href="/delivery">Dispatch</Link>
                         <Link href="/">About</Link>
                         <Link href="/">Contact</Link>
                         {user && <Link href="/account/orders">Orders</Link>}
