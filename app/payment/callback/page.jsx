@@ -1,21 +1,21 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 export const dynamic = 'force-dynamic'
 
 export default function PaymentCallback() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [status, setStatus] = useState('verifying')
 
   useEffect(() => {
     const verifyPayment = async () => {
-      const type = searchParams.get('type')
-      const ref = searchParams.get('ref')
-      const transactionId = searchParams.get('transaction_id')
-      const txRef = searchParams.get('tx_ref')
+      const params = new URLSearchParams(window.location.search)
+      const type = params.get('type')
+      const ref = params.get('ref')
+      const transactionId = params.get('transaction_id')
+      const txRef = params.get('tx_ref')
 
       if (!type || !ref) {
         setStatus('error')
@@ -57,7 +57,7 @@ export default function PaymentCallback() {
     }
 
     verifyPayment()
-  }, [searchParams, router])
+  }, [router])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
