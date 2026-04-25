@@ -77,8 +77,44 @@ const OrderSummary = ({ totalPrice, items }) => {
                 status: 'pending',
                 userId: user.id,
                 createdAt: new Date().toISOString(),
+                paymentStatus: paymentMethod === 'COD' ? 'pending' : 'pending_payment',
             }
 
+            // For online payment, initiate payment first
+            if (paymentMethod === 'CARD') {
+                const paymentResponse = await fetch('/api/payment/initiate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: orderTotal,
+                        currency: process.env.NEXT_PUBLIC_CURRENCY_CODE || 'ngn',
+                        email: user.email,
+                        name: `${selectedAddress.name}`,
+                        type: 'order',
+                        reference: `order-${orderId}`,
+                    }),
+                })
+
+                const paymentData = await paymentResponse.json()
+
+                if (!paymentResponse.ok || paymentData.status !== 'success') {
+                    throw new Error(paymentData.error || 'Payment initiation failed')
+                }
+
+                // Save order with pending payment status
+                await db.transact(db.tx.orders[orderId].update(orderData)).catch(err => {
+                    if (err.message?.includes('closing')) {
+                        throw new Error('Connection lost. Order could not be saved. Please try again.')
+                    }
+                    throw err
+                })
+
+                // Redirect to Flutterwave payment page
+                window.location.href = paymentData.data.link
+                return 'Redirecting to payment...'
+            }
+
+            // For COD, save order directly
             await db.transact(db.tx.orders[orderId].update(orderData)).catch(err => {
                 if (err.message?.includes('closing')) {
                     throw new Error('Connection lost. Order could not be saved. Please try again.')

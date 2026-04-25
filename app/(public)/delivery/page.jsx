@@ -243,13 +243,16 @@ export default function DeliveryPage() {
     try {
       setSubmitting(true)
 
+      console.log('User:', user)
+      console.log('User ID:', user?.id)
+
       // Generate tracking number with prefix
       const trackingId = id()
       const trackingNumber = `DEL-${Date.now().toString().slice(-8)}`
 
       // Create delivery request in database
       const deliveryData = {
-        userId: user.uid,
+        userId: user.id,
         userEmail: user.email,
         trackingNumber,
         vehicleType,
@@ -290,17 +293,51 @@ export default function DeliveryPage() {
         insuranceFee: pricing.insuranceFee,
         totalPrice: pricing.total,
 
+        // Payment status
+        paymentStatus: paymentMethod === 'COD' ? 'pending' : 'pending_payment',
+
         // Metadata
         createdAt: new Date().toISOString(),
         estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days
       }
 
+      console.log('Saving delivery:', deliveryData)
+
       await db.transact(db.tx.deliveries[trackingId].update(deliveryData)).catch((err) => {
+        console.error('Transact error:', err)
         if (err.message?.includes('closing')) {
           throw new Error('Connection lost. Please refresh and try again.')
         }
         throw err
       })
+
+      console.log('Delivery saved successfully')
+
+      // For online payment, initiate payment
+      if (paymentMethod === 'online') {
+        const paymentResponse = await fetch('/api/payment/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: pricing.total,
+            currency: process.env.NEXT_PUBLIC_CURRENCY_CODE || 'ngn',
+            email: user.email,
+            name: senderName,
+            type: 'delivery',
+            reference: `delivery-${trackingNumber}`,
+          }),
+        })
+
+        const paymentData = await paymentResponse.json()
+
+        if (!paymentResponse.ok || paymentData.status !== 'success') {
+          throw new Error(paymentData.error || 'Payment initiation failed')
+        }
+
+        // Redirect to Flutterwave payment page
+        window.location.href = paymentData.data.link
+        return
+      }
 
       toast.success(`Delivery request created! Tracking: ${trackingNumber}`)
       

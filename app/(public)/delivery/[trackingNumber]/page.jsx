@@ -292,7 +292,9 @@ export default function DeliveryTrackingPage() {
               <div className={`p-4 rounded-lg ${
                 delivery.paymentMethod === 'COD'
                   ? 'bg-orange-50 border border-orange-200'
-                  : 'bg-blue-50 border border-blue-200'
+                  : delivery.paymentStatus === 'paid'
+                  ? 'bg-green-50 border border-green-200'
+                  : 'bg-yellow-50 border border-yellow-200'
               }`}>
                 <p className="font-semibold text-slate-800 mb-1">
                   {delivery.paymentMethod === 'COD' ? '💵 Cash On Delivery' : '💳 Pay Online'}
@@ -300,7 +302,9 @@ export default function DeliveryTrackingPage() {
                 <p className="text-sm text-slate-600">
                   {delivery.paymentMethod === 'COD'
                     ? 'Payment will be collected from you on delivery'
-                    : 'Payment has been processed online'}
+                    : delivery.paymentStatus === 'paid'
+                    ? 'Payment has been processed successfully'
+                    : 'Payment is pending'}
                 </p>
               </div>
             </div>

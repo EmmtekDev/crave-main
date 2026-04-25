@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import db from '@/lib/instantdb'
-import { useActiveDeliveries } from '@/lib/instantdbHooks'
+import { useDeliveries } from '@/lib/instantdbHooks'
 import toast from 'react-hot-toast'
 import { ArrowLeft, TrendingUp, Truck, Clock, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -13,7 +13,7 @@ export default function AdminLogisticsPage() {
   const [loading, setLoading] = useState(true)
   const [filterStatus, setFilterStatus] = useState('all')
   const [updatingDeliveryId, setUpdatingDeliveryId] = useState(null)
-  const { deliveries, isLoading: deliveriesLoading } = useActiveDeliveries()
+  const { deliveries, isLoading: deliveriesLoading } = useDeliveries()
 
   useEffect(() => {
     // Check if admin session exists

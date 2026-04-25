@@ -75,15 +75,26 @@ export default function OrdersPage() {
                       <p className="font-medium text-slate-800">Order #{order.id.slice(0, 8)}</p>
                       <p className="text-sm text-slate-600">{new Date(order.createdAt).toLocaleDateString()}</p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      order.status === 'delivered'
-                        ? 'bg-green-100 text-green-700'
-                        : order.status === 'shipped'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {order.status || 'pending'}
-                    </span>
+                    <div className="flex gap-2">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        order.status === 'delivered'
+                          ? 'bg-green-100 text-green-700'
+                          : order.status === 'shipped'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {order.status || 'pending'}
+                      </span>
+                      {order.paymentMethod === 'CARD' && (
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          order.paymentStatus === 'paid'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {order.paymentStatus === 'paid' ? 'Paid' : 'Payment Pending'}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <p className="text-slate-700 mb-3">{order.items?.length || 0} items • {currency}{((order.total || 0) / 100).toFixed(2)}</p>
                   <Link href={`/account/orders/${order.id}`} className="text-orange-600 hover:text-orange-700 font-medium text-sm">
@@ -107,17 +118,28 @@ export default function OrdersPage() {
                       <p className="font-medium text-slate-800 font-mono">{delivery.trackingNumber}</p>
                       <p className="text-sm text-slate-600">{new Date(delivery.createdAt).toLocaleDateString()}</p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      delivery.status === 'delivered'
-                        ? 'bg-green-100 text-green-700'
-                        : delivery.status?.includes('delivery')
-                        ? 'bg-blue-100 text-blue-700'
-                        : delivery.status?.includes('picked')
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {delivery.status?.replace(/_/g, ' ')}
-                    </span>
+                    <div className="flex gap-2">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        delivery.status === 'delivered'
+                          ? 'bg-green-100 text-green-700'
+                          : delivery.status?.includes('delivery')
+                          ? 'bg-blue-100 text-blue-700'
+                          : delivery.status?.includes('picked')
+                          ? 'bg-purple-100 text-purple-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {delivery.status?.replace(/_/g, ' ')}
+                      </span>
+                      {delivery.paymentMethod === 'online' && (
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          delivery.paymentStatus === 'paid'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {delivery.paymentStatus === 'paid' ? 'Paid' : 'Payment Pending'}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <p className="text-slate-700 mb-2">
                     <span className="font-medium">{delivery.packageType}</span> • {delivery.packageWeight} kg
