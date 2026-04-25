@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import Flutterwave from 'flutterwave-node-v3'
-import db from '@/lib/instantdb'
 
 export async function POST(request) {
   try {
@@ -29,27 +28,79 @@ export async function POST(request) {
       const [type, ref] = tx_ref.split('-', 2)
 
       if (type === 'order') {
-        // Update order payment status
-        await db.transact(
-          db.tx.orders[ref].update({
-            paymentStatus: 'paid',
-            paymentReference: tx_ref,
-            paidAt: new Date().toISOString(),
+        // Update order payment status using InstantDB REST API
+        const response = await fetch('https://api.instantdb.com/transact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            'app-id': process.env.NEXT_PUBLIC_INSTANT_DB_APP_ID,
+            'steps': [
+              {
+                'kind': 'update',
+                'table': 'orders',
+                'id': ref,
+                'attrs': {
+                  'paymentStatus': 'paid',
+                  'paymentReference': tx_ref,
+                  'paidAt': new Date().toISOString(),
+                }
+              }
+            ]
           })
-        )
-      } else if (type === 'delivery') {
-        // Update delivery payment status
-        const deliveries = await db.useQuery({ deliveries: {} })
-        const delivery = deliveries.data?.deliveries?.find(d => d.trackingNumber === ref)
+        })
 
-        if (delivery) {
-          await db.transact(
-            db.tx.deliveries[delivery.id].update({
-              paymentStatus: 'paid',
-              paymentReference: tx_ref,
-              paidAt: new Date().toISOString(),
+        if (!response.ok) {
+          console.error('Failed to update order payment status')
+        }
+      } else if (type === 'delivery') {
+        // Find delivery by tracking number first
+        const findResponse = await fetch(`https://api.instantdb.com/query`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            'app-id': process.env.NEXT_PUBLIC_INSTANT_DB_APP_ID,
+            'query': {
+              'deliveries': {}
+            }
+          })
+        })
+
+        if (findResponse.ok) {
+          const data = await findResponse.json()
+          const delivery = data.deliveries?.find(d => d.trackingNumber === ref)
+
+          if (delivery) {
+            // Update delivery payment status
+            const updateResponse = await fetch('https://api.instantdb.com/transact', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                'app-id': process.env.NEXT_PUBLIC_INSTANT_DB_APP_ID,
+                'steps': [
+                  {
+                    'kind': 'update',
+                    'table': 'deliveries',
+                    'id': delivery.id,
+                    'attrs': {
+                      'paymentStatus': 'paid',
+                      'paymentReference': tx_ref,
+                      'paidAt': new Date().toISOString(),
+                    }
+                  }
+                ]
+              })
             })
-          )
+
+            if (!updateResponse.ok) {
+              console.error('Failed to update delivery payment status')
+            }
+          }
         }
       }
 
