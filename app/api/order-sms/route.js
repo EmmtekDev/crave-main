@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request) {
   try {
-    const { orderId, total, userId } = await request.json();
+    const { orderId, total, userId, type = 'order', ...extra } = await request.json();
 
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -19,7 +19,13 @@ export async function POST(request) {
       to: toNumber.startsWith('whatsapp:') ? toNumber : `whatsapp:${toNumber}`,
     };
 
-    const bodyText = `New order received: #${orderId}. Total: $${((total || 0) / 100).toFixed(2)}. User ID: ${userId}.`;
+    let bodyText = ''
+    if (type === 'dispatch') {
+      bodyText = `🚚 New Dispatch Order: #${orderId}\n💰 Total: ₦${((total || 0) / 100).toFixed(2)}\n👤 User ID: ${userId}\n📤 Sender: ${extra.senderName} (${extra.senderPhone})\n📥 Receiver: ${extra.receiverName} (${extra.receiverPhone})\n🚗 Vehicle: ${extra.vehicleType}\n📍 From: ${extra.fromLocation}\n📍 To: ${extra.toLocation}`
+    } else {
+      const itemsSummary = extra.items?.map(item => `${item.name} (x${item.quantity})`).join(', ') || 'N/A'
+      bodyText = `🛒 New Shop Order: #${orderId}\n💰 Total: ₦${((total || 0) / 100).toFixed(2)}\n👤 User ID: ${userId}\n📦 Items: ${itemsSummary}\n📍 Address: ${extra.address}\n💳 Payment: ${extra.paymentMethod}`
+    }
     const params = new URLSearchParams({
       From: presets.from,
       To: presets.to,

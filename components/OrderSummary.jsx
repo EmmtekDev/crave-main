@@ -127,7 +127,15 @@ const OrderSummary = ({ totalPrice, items }) => {
                 const notifyResponse = await fetch('/api/order-sms', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ orderId, total: orderData.total, userId: user.id }),
+                    body: JSON.stringify({ 
+                      orderId, 
+                      total: orderData.total, 
+                      userId: user.id, 
+                      type: 'order',
+                      items: items.map(item => ({ name: item.name, quantity: item.quantity })),
+                      address: `${selectedAddress.name}, ${selectedAddress.city}, ${selectedAddress.state}`,
+                      paymentMethod: paymentMethod === 'COD' ? 'Cash on Delivery' : 'Card Payment'
+                    }),
                 })
 
                 if (!notifyResponse.ok) {

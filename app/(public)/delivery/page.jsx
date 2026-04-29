@@ -313,6 +313,36 @@ export default function DeliveryPage() {
 
       console.log('Delivery saved successfully')
 
+      // Send WhatsApp notification to admin
+      try {
+        const notifyResponse = await fetch('/api/order-sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            orderId: trackingNumber, 
+            total: pricing.total, 
+            userId: user.id, 
+            type: 'dispatch',
+            senderName,
+            senderPhone,
+            receiverName,
+            receiverPhone,
+            vehicleType: selectedVehicle,
+            fromLocation,
+            toLocation
+          }),
+        })
+
+        if (!notifyResponse.ok) {
+          const notifyData = await notifyResponse.json().catch(() => ({}))
+          console.error('Dispatch WhatsApp notification failed', notifyData)
+          toast.error('Delivery created, but notification failed. Check server logs.')
+        }
+      } catch (notifyError) {
+        console.error('Dispatch WhatsApp notification error', notifyError)
+        toast.error('Delivery created, but notification failed. Check server logs.')
+      }
+
       // For online payment, initiate payment
       if (paymentMethod === 'online') {
         const paymentResponse = await fetch('/api/payment/initiate', {
