@@ -13,10 +13,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Twilio configuration missing in environment' }, { status: 500 });
     }
 
-    // Twilio WhatsApp format: whatsapp:+14155238886
+    // Twilio SMS format (for testing - change back to WhatsApp later)
     const presets = {
-      from: fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`,
-      to: toNumber.startsWith('whatsapp:') ? toNumber : `whatsapp:${toNumber}`,
+      from: fromNumber,
+      to: toNumber,
     };
 
     let bodyText = ''
