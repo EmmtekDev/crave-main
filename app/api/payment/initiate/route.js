@@ -22,10 +22,9 @@ export async function POST(request) {
     // Create payment payload
     const payload = {
       tx_ref: reference,
-      amount: amount / 100, // Convert from kobo to naira
+      amount: amount / 100,
       currency: currency.toUpperCase(),
-      redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback?type=${type}&ref=${reference}`,
-      payment_options: 'card',
+      redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback?type=${type}&ref=${encodeURIComponent(reference)}`,
       customer: {
         email,
         name,
@@ -33,7 +32,7 @@ export async function POST(request) {
       customizations: {
         title: 'CraveStore Payment',
         description: `${type} payment`,
-        logo: 'https://your-logo-url.com/logo.png', // Replace with actual logo
+        logo: 'https://your-logo-url.com/logo.png',
       },
     }
 
@@ -60,7 +59,7 @@ export async function POST(request) {
     return NextResponse.json({
       status: 'success',
       data: {
-        link: data.data.authorization_url,
+        link: data.data.link,
         reference: data.data.tx_ref,
       },
     })
