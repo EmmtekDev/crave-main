@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+// Email notifications using Resend
 export async function POST(request) {
   try {
     const { orderId, total, userId, type = 'order', ...extra } = await request.json();
