@@ -141,7 +141,7 @@ const OrderSummary = ({ totalPrice, items }) => {
                 if (!notifyResponse.ok) {
                     const notifyData = await notifyResponse.json().catch(() => ({}))
                     console.error('Order SMS notification failed', notifyData)
-                    toast.error('Order placed, but SMS notification failed. Check server logs.')
+                    toast.error('Order placed, but notification failed. Check server logs.')
                 }
             } catch (notifyError) {
                 console.error('Order SMS notification error', notifyError)

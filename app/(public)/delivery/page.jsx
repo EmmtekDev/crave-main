@@ -339,7 +339,7 @@ export default function DeliveryPage() {
           toast.error('Delivery created, but notification failed. Check server logs.')
         }
       } catch (notifyError) {
-        console.error('Dispatch WhatsApp notification error', notifyError)
+          console.error('Dispatch notification error', notifyError)
         toast.error('Delivery created, but notification failed. Check server logs.')
       }
 
