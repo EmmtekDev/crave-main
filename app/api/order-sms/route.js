@@ -18,7 +18,7 @@ export async function POST(request) {
       : `New Shop Order: #${orderId}\nTotal: ₦${((total || 0) / 100).toFixed(2)}\nUser ID: ${userId}\nItems: ${extra.items?.map(item => `${item.name} (x${item.quantity})`).join(', ') || 'N/A'}\nAddress: ${extra.address}\nPayment: ${extra.paymentMethod}`;
 
     const emailPayload = {
-      from: 'smile33c@gmail.com',
+      from: 'onboarding@resend.dev',
       to: adminEmail,
       subject,
       text: bodyText,
