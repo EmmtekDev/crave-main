@@ -326,11 +326,11 @@ export default function DeliveryPage() {
             type: 'dispatch',
             senderName,
             senderPhone,
-            receiverName,
-            receiverPhone,
-            vehicleType: selectedVehicle,
-            fromLocation,
-            toLocation
+            receiverName: recipientName,
+            receiverPhone: recipientPhone,
+            vehicleType,
+            fromLocation: senderAddress,
+            toLocation: recipientAddress
           }),
         })
 
