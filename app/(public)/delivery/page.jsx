@@ -314,6 +314,7 @@ export default function DeliveryPage() {
       console.log('Delivery saved successfully')
 
       // Send WhatsApp notification to admin
+      console.log('Attempting to send dispatch notification');
       try {
         const notifyResponse = await fetch('/api/order-sms', {
           method: 'POST',

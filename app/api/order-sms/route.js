@@ -5,6 +5,8 @@ export async function POST(request) {
   try {
     const { orderId, total, userId, type = 'order', ...extra } = await request.json();
 
+    console.log('Email notification request:', { orderId, total, userId, type, extra });
+
     const resendApiKey = process.env.RESEND_API_KEY;
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@craveonline.store';
 
@@ -39,6 +41,7 @@ export async function POST(request) {
     }
 
     const resendData = await response.json();
+    console.log('Email sent successfully for type:', type, 'ID:', resendData.id);
     return NextResponse.json({ success: true, id: resendData.id });
   } catch (error) {
     console.error('Email notification error', error);
