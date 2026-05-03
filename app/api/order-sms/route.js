@@ -8,7 +8,7 @@ export async function POST(request) {
     console.log('Email notification request:', { orderId, total, userId, type, extra });
 
     const resendApiKey = process.env.RESEND_API_KEY;
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@craveonline.store';
+    const adminEmail = process.env.ADMIN_EMAIL || 'craveaccessories647@gmail.com';
 
     if (!resendApiKey) {
       return NextResponse.json({ error: 'Resend API key not configured' }, { status: 500 });

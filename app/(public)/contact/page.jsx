@@ -37,6 +37,11 @@ export default function ContactPage() {
             content: ['08055452f421', '09073218166']
         },
         {
+            icon: '✉️',
+            title: 'Email',
+            content: ['craveaccessories647@gmail.com']
+        },
+        {
             icon: '📍',
             title: 'Location',
             content: ['CB 45, 46 & 53 CB Plaza', 'Fancy and Furniture, Alaba International Market', 'Ojo Lagos']

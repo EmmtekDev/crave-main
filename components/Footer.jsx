@@ -32,7 +32,7 @@ const Footer = () => {
             links: [
                 { text: "08055452f421", path: 'tel:08055452f421', icon: PhoneIcon },
                 { text: "09073218166", path: 'tel:09073218166', icon: PhoneIcon },
-                { text: "contact@example.com", path: 'mailto:contact@example.com', icon: MailIcon },
+                { text: "craveaccessories647@gmail.com", path: 'mailto:craveaccessories647@gmail.com', icon: MailIcon },
                 { text: "CB 45, 46 & 53 CB Plaza, Fancy and Furniture, Alaba International Market, Ojo Lagos", path: '/', icon: MapPinIcon }
             ]
         }
