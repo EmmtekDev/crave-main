@@ -152,7 +152,7 @@ const OrderSummary = ({ totalPrice, items }) => {
             setSubmitting(false)
 
             toast.success('Order placed successfully')
-            router.push('/orders')
+            router.push(`/thank-you?type=order&ref=${orderId}`)
 
             return 'Order placed successfully'
         } catch (err) {

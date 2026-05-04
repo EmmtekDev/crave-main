@@ -372,9 +372,9 @@ export default function DeliveryPage() {
 
       toast.success(`Delivery request created! Tracking: ${trackingNumber}`)
       
-      // Redirect to tracking page
+      // Redirect to thank you page
       setTimeout(() => {
-        router.push(`/delivery/${trackingNumber}`)
+        router.push(`/thank-you?type=dispatch&ref=${trackingNumber}`)
         router.refresh()
       }, 1500)
     } catch (err) {

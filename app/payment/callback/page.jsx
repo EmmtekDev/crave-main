@@ -40,9 +40,9 @@ export default function PaymentCallback() {
           // Redirect based on type
           setTimeout(() => {
             if (type === 'order') {
-              router.push('/account/orders')
+              router.push(`/thank-you?type=order&ref=${ref}`)
             } else if (type === 'delivery') {
-              router.push(`/delivery/${ref}`)
+              router.push(`/thank-you?type=dispatch&ref=${ref}`)
             }
           }, 2000)
         } else {
