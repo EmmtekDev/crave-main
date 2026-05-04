@@ -3,6 +3,7 @@ import { assets } from '@/assets/assets'
 import { ArrowRightIcon, ChevronRightIcon } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
+import Link from 'next/link'
 import CategoriesMarquee from './CategoriesMarquee'
 
 const Hero = () => {
@@ -18,13 +19,15 @@ const Hero = () => {
                             <span className='bg-orange-600 px-3 py-1 max-sm:ml-1 rounded-full text-white text-xs'>NEWS</span> Dispatch fee ₦2,000 on all orders! <ChevronRightIcon className='group-hover:ml-2 transition-all' size={16} />
                         </div>
                         <h2 className='text-3xl sm:text-5xl leading-[1.2] my-3 font-medium bg-gradient-to-r from-slate-600 to-[#A0FF74] bg-clip-text text-transparent max-w-xs  sm:max-w-md'>
-                            Gadgets you'll love. Prices you'll trust.
+                            Fast Dispatch Services. Reliable & Affordable.
                         </h2>
                         <div className='text-slate-800 text-sm font-medium mt-4 sm:mt-8'>
                             <p>Starts from</p>
-                            <p className='text-3xl'>{currency}4.90</p>
+                            <p className='text-3xl'>{currency}2,000</p>
                         </div>
-                        <button className='bg-slate-800 text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-md hover:bg-slate-900 hover:scale-103 active:scale-95 transition'>LEARN MORE</button>
+                        <Link href="/delivery">
+                            <button className='bg-slate-800 text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-md hover:bg-slate-900 hover:scale-103 active:scale-95 transition'>Book Dispatch</button>
+                        </Link>
                     </div>
                     <Image className='sm:absolute bottom-0 right-0 md:right-10 w-full sm:max-w-sm' src={assets.hero_model_img} alt="" />
                 </div>
