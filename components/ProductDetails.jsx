@@ -41,7 +41,7 @@ const ProductDetails = ({ product }) => {
                     )}
                 </div>
                 <div className="flex justify-center items-center h-100 sm:size-113 bg-slate-100 rounded-lg ">
-                    <Image src={mainImage} alt="" width={250} height={250} />
+                    <Image src={mainImage} alt={product?.name || 'Product main image'} width={250} height={250} />
                 </div>
             </div>
             <div className="flex-1">
