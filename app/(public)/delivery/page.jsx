@@ -843,6 +843,27 @@ export default function DeliveryPage() {
               </div>
 
               {/* Pricing Summary */}
+              <div className="bg-slate-100 p-5 rounded-3xl border border-slate-200 mb-4">
+                <h4 className="font-semibold text-slate-900 mb-3">How your delivery price is calculated</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li className="flex gap-2">
+                    <span className="font-semibold text-orange-600">•</span>
+                    Base fee: fixed cost for the vehicle you selected (bike, car, or truck)
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-semibold text-orange-600">•</span>
+                    Weight charge: extra cost based on the package weight
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-semibold text-orange-600">•</span>
+                    Fragile handling: added only when the package is marked fragile
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="font-semibold text-orange-600">•</span>
+                    Insurance: optional protection for the declared package value
+                  </li>
+                </ul>
+              </div>
               <div className="bg-orange-50 p-6 rounded-lg border border-orange-200">
                 <h4 className="font-semibold text-slate-800 mb-4 flex items-center">
                   <DollarSign className="w-5 h-5 mr-2 text-orange-600" />
