@@ -23,6 +23,7 @@ const OrderSummary = ({ totalPrice, items }) => {
     const [couponCodeInput, setCouponCodeInput] = useState('');
     const [coupon, setCoupon] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     const dispatchFee = 2000; // Naira
     const dispatchFeeRaw = dispatchFee * 100; // in minor currency units
@@ -50,6 +51,9 @@ const OrderSummary = ({ totalPrice, items }) => {
             if (!user) {
                 throw new Error('Please log in first')
             }
+            if (!acceptedTerms) {
+                throw new Error('Please accept the terms and privacy policy before placing your order')
+            }
 
             setSubmitting(true)
             const orderId = id()
@@ -76,6 +80,9 @@ const OrderSummary = ({ totalPrice, items }) => {
                 dispatchFee: dispatchFeeRaw,
                 status: 'pending',
                 userId: user.id,
+                acceptedTerms: true,
+                termsAcceptedAt: new Date().toISOString(),
+                termsVersion: '1.0',
                 createdAt: new Date().toISOString(),
                 paymentStatus: paymentMethod === 'COD' ? 'pending' : 'pending_payment',
             }
@@ -238,6 +245,18 @@ const OrderSummary = ({ totalPrice, items }) => {
             <div className='flex justify-between py-4'>
                 <p>Total:</p>
                 <p className='font-medium text-right'>{currency}{((totalPrice + dispatchFeeRaw - (coupon ? Math.round(((coupon?.discount || 0) / 100) * totalPrice) : 0)) / 100).toFixed(2)}</p>
+            </div>
+            <div className='flex items-start gap-2 mt-4 text-sm text-slate-600'>
+                <input
+                    id='order-accept-terms'
+                    type='checkbox'
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className='mt-1 accent-orange-600'
+                />
+                <label htmlFor='order-accept-terms'>
+                    I agree to the <a href='/legal' className='text-orange-600 underline'>Terms & Privacy Policy</a>.
+                </label>
             </div>
             {!user ? (
                 <p className='w-full text-center py-2.5 rounded bg-slate-300 text-slate-600 text-sm'>Please log in to place order</p>

@@ -46,6 +46,7 @@ export default function DeliveryPage() {
 
   // Payment info
   const [paymentMethod, setPaymentMethod] = useState('COD') // COD or online
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   // Pricing info
   const [pricing, setPricing] = useState({
@@ -240,6 +241,11 @@ export default function DeliveryPage() {
       return
     }
 
+    if (!acceptedTerms) {
+      toast.error('Please agree to the terms and conditions before creating your delivery request')
+      return
+    }
+
     try {
       setSubmitting(true)
 
@@ -295,6 +301,9 @@ export default function DeliveryPage() {
 
         // Payment status
         paymentStatus: paymentMethod === 'COD' ? 'pending' : 'pending_payment',
+        acceptedTerms: true,
+        termsAcceptedAt: new Date().toISOString(),
+        termsVersion: '1.0',
 
         // Metadata
         createdAt: new Date().toISOString(),
@@ -883,6 +892,19 @@ export default function DeliveryPage() {
               </div>
 
               {/* Navigation Buttons */}
+              <div className="flex items-start gap-2 mt-4 text-sm text-slate-600">
+                <input
+                  id="delivery-accept-terms"
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-1 accent-orange-600"
+                />
+                <label htmlFor="delivery-accept-terms">
+                  I agree to the <a href="/legal" className="text-orange-600 underline">Terms & Privacy Policy</a>.
+                </label>
+              </div>
+
               <div className="flex gap-4">
                 <button
                   type="button"
@@ -909,7 +931,6 @@ export default function DeliveryPage() {
                 </button>
               </div>
 
-              {/* Terms */}
               <p className="text-xs text-slate-600 text-center">
                 By submitting, you agree to our delivery terms and conditions
               </p>
