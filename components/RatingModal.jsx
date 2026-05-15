@@ -1,24 +1,50 @@
-'use client'
+ 'use client'
 
 import { Star } from 'lucide-react';
 import React, { useState } from 'react'
 import { XIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
+import db from '@/lib/instantdb'
+import { id } from '@instantdb/react'
+import { useDispatch } from 'react-redux'
+import { addRating } from '@/lib/features/rating/ratingSlice'
 
 const RatingModal = ({ ratingModal, setRatingModal }) => {
 
+    const dispatch = useDispatch()
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState('');
+    const [submitting, setSubmitting] = useState(false)
 
     const handleSubmit = async () => {
-        if (rating < 0 || rating > 5) {
-            return toast('Please select a rating');
-        }
-        if (review.length < 5) {
-            return toast('write a short review');
+        if (rating <= 0 || rating > 5) {
+            return toast.error('Please select a rating')
         }
 
-        setRatingModal(null);
+        setSubmitting(true)
+
+        try {
+            const payload = {
+                orderId: ratingModal?.orderId || null,
+                productId: ratingModal?.productId || null,
+                rating,
+                review,
+                createdAt: new Date().toISOString(),
+            }
+
+            await db.transact(db.tx.ratings[id()].update(payload))
+
+            // Optimistically add to Redux store for immediate UI update
+            dispatch(addRating(payload))
+
+            toast.success('Thanks for your rating')
+            setRatingModal(null)
+        } catch (err) {
+            console.error('Failed to save rating', err)
+            toast.error('Failed to submit rating. Try again.')
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -44,7 +70,7 @@ const RatingModal = ({ ratingModal, setRatingModal }) => {
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
                 ></textarea>
-                <button onClick={e => toast.promise(handleSubmit(), { loading: 'Submitting...' })} className='w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition'>
+                <button onClick={e => toast.promise(handleSubmit(), { loading: 'Submitting...' })} disabled={submitting} className='w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition disabled:opacity-60'>
                     Submit Rating
                 </button>
             </div>
