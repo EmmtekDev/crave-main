@@ -668,6 +668,38 @@ export default function DeliveryPage() {
                       className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
                       required
                     />
+                    <p className="md:col-span-2 text-xs text-slate-500 mt-2">No scale? Use one of the quick estimates below, or choose the closest match.</p>
+                    <div className="md:col-span-2 flex flex-wrap gap-2 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => setPackageWeight('0.5')}
+                        className="px-3 py-2 rounded-full border border-slate-300 text-xs text-slate-700 hover:bg-slate-100 transition"
+                      >
+                        Document / light item (~0.5 kg)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPackageWeight('1')}
+                        className="px-3 py-2 rounded-full border border-slate-300 text-xs text-slate-700 hover:bg-slate-100 transition"
+                      >
+                        Small parcel (~1 kg)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPackageWeight('2')}
+                        className="px-3 py-2 rounded-full border border-slate-300 text-xs text-slate-700 hover:bg-slate-100 transition"
+                      >
+                        Medium parcel (~2 kg)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPackageWeight('3')}
+                        className="px-3 py-2 rounded-full border border-slate-300 text-xs text-slate-700 hover:bg-slate-100 transition"
+                      >
+                        Large parcel (~3 kg)
+                      </button>
+                    </div>
+                    <p className="md:col-span-2 text-xs text-slate-500 mt-2">Example reference: 1L water = 1 kg, shoes ≈ 2–3 kg, phone + charger ≈ 0.5–1 kg.</p>
                   </div>
                   <input
                     type="number"
