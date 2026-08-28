@@ -5,6 +5,10 @@ import "./globals.css";
 export const metadata = {
     title: "CraveStore — Where innovation meet elegance",
     description: "Where innovation meet elegance",
+
+    other: {
+        "google-adsense-account": "ca-pub-1398515947251090",
+    },
 };
 
 export default function RootLayout({ children }) {
